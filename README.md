@@ -38,17 +38,15 @@ Options:
 ```sh
 # .git/hooks/prepare-commit-msg
 
-VERSION_BIN="target/__version"
-
-if [ ! -f $VERSION_BIN ]; then
-    # Download to VERSION_BIN
+if [ command -v version &> /dev/null ]; then
+    cargo install --git https://github.com/charliethomson/version
 fi
 
 # Only run for regular commits
 if [ -z "${2:-}" ] || [ "$2" = "message" ]; then
     echo "Running version bump..."
 
-    if $VERSION_BIN --from-git --message-file "$1" --workspace-manifest Cargo.toml; then
+    if version --from-git --message-file "$1" --workspace-manifest Cargo.toml; then
         if ! git diff --quiet Cargo.toml; then
             # Mark that we need to amend the commit
             touch .git/NEED_VERSION_AMEND
