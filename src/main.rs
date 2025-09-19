@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use cargo_manifest::Manifest;
 use clap::{Parser, ValueEnum};
-use colored::*;
+use colored::{Color, Colorize};
 use semver::{BuildMetadata, Prerelease, Version};
 
 #[derive(Parser)]
@@ -72,7 +72,7 @@ trait VersionExt: Sized {
         self.set_pre(None)
     }
     fn inc_pre(self) -> Self {
-        let v = self.get_pre().map(|v| v + 1).unwrap_or(0);
+        let v = self.get_pre().map_or(0, |v| v + 1);
         self.set_pre(Some(v))
     }
 }
@@ -97,7 +97,7 @@ impl VersionExt for Version {
 
     fn set_pre(mut self, version: Option<u64>) -> Self {
         if let Some(version) = version {
-            self.pre = Prerelease::new(&format!("alpha.{}", version))
+            self.pre = Prerelease::new(&format!("alpha.{version}"))
                 .expect("Prerelease constructor rejected valid prerelease version");
         } else {
             self.pre = Prerelease::EMPTY;
@@ -147,7 +147,7 @@ impl VersionBump {
         }
     }
 
-    fn description(&self) -> &'static str {
+    fn description(self) -> &'static str {
         match self {
             VersionBump::Major => "major release",
             VersionBump::Minor => "minor release",
@@ -158,7 +158,7 @@ impl VersionBump {
         }
     }
 
-    fn emoji(&self) -> &'static str {
+    fn emoji(self) -> &'static str {
         match self {
             VersionBump::Major => "🚀",
             VersionBump::Minor => "✨",
@@ -169,7 +169,7 @@ impl VersionBump {
         }
     }
 
-    fn color(&self) -> Color {
+    fn color(self) -> Color {
         match self {
             VersionBump::Major => Color::Red,
             VersionBump::Minor => Color::Blue,
