@@ -1,6 +1,6 @@
 [package]
 name = "version"
-version = "0.1.0"
+version = "0.1.1-alpha.0"
 edition = "2024"
 
 [dependencies]
@@ -8,10 +8,7 @@ anyhow = { version = "1.0.99" }
 cargo-manifest = "0.19.1"
 clap = { version = "4.5.46", features = ["derive", "env"] }
 colored = "3.0.0"
-lazy_static = "1.5.0"
-regex = { version = "1.11.1" }
 semver = "1.0.26"
-toml = { version = "0.9.5" }
 
 [lints.clippy]
 pedantic = { level = "warn", priority = 0 }
