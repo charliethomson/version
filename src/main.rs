@@ -263,10 +263,15 @@ fn main() -> anyhow::Result<()> {
         "version"
     };
 
-    let file_content = std::fs::read_to_string(&args.path)?.replace(
-        &format!("{field} = \"{old_version}\""),
-        &format!("{field} = \"{new_version}\""),
-    );
+    let file_content = std::fs::read_to_string(&args.path)?
+        .replace(
+            &format!("{field} = \"{old_version}\""),
+            &format!("{field} = \"{new_version}\""),
+        )
+        .replace(
+            &format!("{field} = '{old_version}'"),
+            &format!("{field} = '{new_version}'"),
+        );
     std::fs::write(&args.path, file_content)?;
 
     if !args.quiet {
