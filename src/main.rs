@@ -264,11 +264,14 @@ fn main() -> anyhow::Result<()> {
     };
 
     let file_content = std::fs::read_to_string(&args.path)?;
+    let escaped = regex::escape(&old_version);
     let pattern = regex::Regex::new(&format!(
-        r#"({field}\s*=\s*)(["']){}\2"#,
-        regex::escape(&old_version)
+        r#"{field}\s*=\s*(['"]){escaped}['"]"#
     ))?;
-    let file_content = pattern.replace(&file_content, format!("${{1}}${{2}}{new_version}${{2}}"));
+    let file_content = pattern.replace(&file_content, |caps: &regex::Captures| {
+        let quote = &caps[1];
+        format!("{field} = {quote}{new_version}{quote}")
+    });
     std::fs::write(&args.path, file_content.as_ref())?;
 
     if !args.quiet {
