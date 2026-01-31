@@ -263,16 +263,13 @@ fn main() -> anyhow::Result<()> {
         "version"
     };
 
-    let file_content = std::fs::read_to_string(&args.path)?
-        .replace(
-            &format!("{field} = \"{old_version}\""),
-            &format!("{field} = \"{new_version}\""),
-        )
-        .replace(
-            &format!("{field} = '{old_version}'"),
-            &format!("{field} = '{new_version}'"),
-        );
-    std::fs::write(&args.path, file_content)?;
+    let file_content = std::fs::read_to_string(&args.path)?;
+    let pattern = regex::Regex::new(&format!(
+        r#"({field}\s*=\s*)(["']){}\2"#,
+        regex::escape(&old_version)
+    ))?;
+    let file_content = pattern.replace(&file_content, format!("${{1}}${{2}}{new_version}${{2}}"));
+    std::fs::write(&args.path, file_content.as_ref())?;
 
     if !args.quiet {
         println!(
